@@ -2,8 +2,7 @@ import * as mongoose from 'mongoose';
 
 const PostSchema = new mongoose.Schema({
     title: String,
-    authorId: {type: mongoose.Types.ObjectId, ref: 'users'},
-    authorName: String, 
+    author: String, 
     content: String,
     tags: {
         type: [String], // Define o tipo como um array de strings

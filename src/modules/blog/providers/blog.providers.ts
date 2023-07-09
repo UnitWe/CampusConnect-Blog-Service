@@ -1,6 +1,6 @@
 import { Connection } from 'mongoose';
-import { PostSchema } from './schemas/post.schema';
-import { CommentSchema } from './schemas/comment.schema';
+import { PostSchema } from '../schemas/post.schema';
+import { CommentSchema } from '../schemas/comment.schema';
 
 export const postProviders = [
   {

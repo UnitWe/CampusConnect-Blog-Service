@@ -1,9 +1,9 @@
 import * as mongoose from 'mongoose';
 
 const CommentSchema = new mongoose.Schema({
-    user: mongoose.Types.ObjectId,
+    username: String,
     content: String,
-    postId: { type: mongoose.Schema.Types.ObjectId, ref: 'posts' }, // Referência ao ID do post
+    post_id: { type: mongoose.Schema.Types.ObjectId, ref: 'posts' },
 });
 
 export { CommentSchema };

@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 export class Comment {
-    authorId: Types.ObjectId
+    username: string
     content: string
-    postId: Types.ObjectId
+    post_id: Types.ObjectId
 }

@@ -1,4 +1,4 @@
 export class getOneDto {
-    perPage: number
+    limit: number
     currentPage: number
 }

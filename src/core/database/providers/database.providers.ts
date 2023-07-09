@@ -7,6 +7,6 @@ export const databaseProviders = [
   {
     provide: 'DATABASE_CONNECTION',
     useFactory: (): Promise<typeof mongoose> =>
-      mongoose.connect(`mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/`),
+      mongoose.connect(`mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@campusconnect.aaxxf8w.mongodb.net/`),
   },
 ];
