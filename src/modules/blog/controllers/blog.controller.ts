@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { BlogService } from '../services/blog.service';
 import { CreatePostDto } from '../dto/create-post.dto';
 import { CreateCommentDto } from '../dto/create-comment.dto';
@@ -31,7 +31,10 @@ export class BlogController {
         return this.blogService.getAllPosts(getOneDto)
     }
 
-    
+    @Patch(":postId/like")
+    updateLikeInAPost(@Param('postId') postId: string){
+        return this.blogService.updateLikes(postId)
+    }
 
     @Post('/comment')
     postComment(@Body() createCommentDto: CreateCommentDto) {

@@ -1,5 +1,5 @@
 import { Model, Types } from 'mongoose';
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Post } from '../interfaces/post.interface';
 import { Comment } from '../interfaces/comment.interface';
 import { CreatePostDto } from '../dto/create-post.dto';
@@ -31,6 +31,16 @@ export class BlogService {
     return createdComment.save();
   }
 
+  async updateLikes(postId: string) {
+    try {
+      const postData = await this.postModel.findById(postId);
+      
+      await postData.updateOne({ $inc: { likes: 1 }})
+    } catch (error) {
+      throw new NotFoundException("Não foi possivel encontrar um post com esse id")
+    }
+  }
+
   async getAllPosts(getOneDto: getOneDto) {
     const { currentPage, limit } = getOneDto;
     const skip = (currentPage - 1) * limit;
@@ -38,13 +48,13 @@ export class BlogService {
       .find()
       .skip(skip)
       .limit(limit)
-      .select('title author')
+      .select('title author likes')
       .sort({ _id: -1 })
       .exec();
 
     let data = {
-      data: posts
-    }
+      data: posts,
+    };
 
     return data;
   }
@@ -61,11 +71,11 @@ export class BlogService {
   }
 
   async getOnePostAuthor(author: String, id: String): Promise<{}> {
-    const post = await this.postModel.findById(id).populate("comments").exec();
+    const post = await this.postModel.findById(id).populate('comments').exec();
     let data = {
-      data: post
-    }
+      data: post,
+    };
 
     return data;
   }
-} 
+}

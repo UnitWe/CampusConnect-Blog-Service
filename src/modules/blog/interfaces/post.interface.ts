@@ -4,6 +4,7 @@ export interface Post {
     authorId: Types.ObjectId
     content: string
     tags?: string[]
+    likes: number
     published: boolean;
     createdAt: Date;
 }
