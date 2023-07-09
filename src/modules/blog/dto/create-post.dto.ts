@@ -4,6 +4,6 @@ export class CreatePostDto {
     author: string
     title: string
     content: string
-    published: boolean
+    published?: boolean
     tags?: string[]
 }

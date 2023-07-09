@@ -38,16 +38,20 @@ export class BlogService {
       .find()
       .skip(skip)
       .limit(limit)
-      .select('title content author')
+      .select('title author')
       .exec();
 
-    return posts;
+    let data = {
+      data: posts
+    }
+
+    return data;
   }
 
   async getAllPostPerAuthor(author: String): Promise<{}> {
     const post = await this.postModel
       .find({ author: author })
-      .select('-comments -content') // não to mandando o array de comentários e o conteudo do post
+      .select('-content -comments')
       .exec();
     const data = {
       data: post,
@@ -57,7 +61,11 @@ export class BlogService {
 
   async getOnePostAuthor(author: String, id: String): Promise<{}> {
     const post = await this.postModel.findById(id).exec();
+    
+    let data = {
+      data: post
+    }
 
-    return post;
+    return data;
   }
-}
+} 

@@ -6,22 +6,22 @@ import { Types } from 'mongoose';
 import { getOneDto } from '../dto/get-one-post.dto';
 
 
-@Controller('blog')
+@Controller('post')
 export class BlogController {
     constructor(private readonly blogService: BlogService) {}
 
 
-    @Post('/create-post')
+    @Post('create')
     post(@Body() createPostDto: CreatePostDto) {
         return this.blogService.post(createPostDto)
     }
 
-    @Get('/get-all-post/:authorName')
+    @Get(':authorName')
     getAllPostPerAuthor(@Param('authorName') authorName:String) {
         return this.blogService.getAllPostPerAuthor(authorName)
     }
 
-    @Get('/get-one-post/:authorName/:id')
+    @Get(':authorName/:id')
     getOnePostPerAuthor(@Param('authorName') authorName: String, @Param('id') id:String) {
         return this.blogService.getOnePostAuthor(authorName, id)
     }
