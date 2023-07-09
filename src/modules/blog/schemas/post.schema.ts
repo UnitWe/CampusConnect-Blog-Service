@@ -9,7 +9,7 @@ const PostSchema = new mongoose.Schema({
         required: false, // Torna o campo tags opcional
     },
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'comments' }],
-    published: Boolean,
+    published: Boolean
 });
 
 PostSchema.pre('save', function (next) {

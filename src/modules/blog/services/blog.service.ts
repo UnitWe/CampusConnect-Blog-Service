@@ -39,6 +39,7 @@ export class BlogService {
       .skip(skip)
       .limit(limit)
       .select('title author')
+      .sort({ _id: -1 })
       .exec();
 
     let data = {
@@ -60,8 +61,7 @@ export class BlogService {
   }
 
   async getOnePostAuthor(author: String, id: String): Promise<{}> {
-    const post = await this.postModel.findById(id).exec();
-    
+    const post = await this.postModel.findById(id).populate("comments").exec();
     let data = {
       data: post
     }

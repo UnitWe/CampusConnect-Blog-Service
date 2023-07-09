@@ -33,7 +33,7 @@ export class BlogController {
 
     
 
-    @Post('/create-comment')
+    @Post('/comment')
     postComment(@Body() createCommentDto: CreateCommentDto) {
         return this.blogService.postComment(createCommentDto)
     }
