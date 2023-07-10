@@ -39,7 +39,7 @@ export class BlogService {
       .skip(skip)
       .limit(limit)
       .select('title author')
-      .sort({ _id: -1 })
+      .sort('-createdAt')
       .exec();
 
     let data = {

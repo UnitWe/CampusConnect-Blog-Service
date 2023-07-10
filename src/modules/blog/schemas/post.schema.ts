@@ -4,12 +4,15 @@ const PostSchema = new mongoose.Schema({
     title: String,
     author: String, 
     content: String,
+    reading_time: Number,
     tags: {
         type: [String], // Define o tipo como um array de strings
         required: false, // Torna o campo tags opcional
     },
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'comments' }],
     published: Boolean
+}, {
+  timestamps: true
 });
 
 PostSchema.pre('save', function (next) {
