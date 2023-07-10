@@ -44,13 +44,31 @@ export class BlogService {
   async getAllPosts(getOneDto: getOneDto) {
     const { currentPage, limit } = getOneDto;
     const skip = (currentPage - 1) * limit;
-    const posts = await this.postModel
-      .find()
-      .skip(skip)
-      .limit(limit)
-      .select('title author likes createdAt')
-      .sort('-createdAt')
-      .exec();
+    const posts = await this.postModel.aggregate([
+      {
+        $sort: { createdAt: -1 }
+      },
+      {
+        $skip: skip
+      },
+      {
+        $limit: limit
+      },
+      {
+        $addFields: {
+          commentsCount: { $size: "$comments" }
+        }
+      },
+      {
+        $project: {
+          title: 1,
+          author: 1,
+          likes: 1,
+          createdAt: 1,
+          commentsCount: 1
+        }
+      }
+    ]).exec();
 
     let data = {
       data: posts,
