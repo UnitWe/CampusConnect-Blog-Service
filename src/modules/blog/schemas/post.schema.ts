@@ -4,6 +4,7 @@ const PostSchema = new mongoose.Schema({
     title: String,
     author: String, 
     content: String,
+    reading_time: Number,
     likes: {
       type: Number,
       default: 0
@@ -13,7 +14,7 @@ const PostSchema = new mongoose.Schema({
         required: false, // Torna o campo tags opcional
     },
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'comments' }],
-    published: Boolean,
+    published: Boolean
 }, {
   timestamps: true
 });

@@ -48,8 +48,8 @@ export class BlogService {
       .find()
       .skip(skip)
       .limit(limit)
-      .select('title author likes')
-      .sort({ _id: -1 })
+      .select('title author likes createdAt')
+      .sort('-createdAt')
       .exec();
 
     let data = {
