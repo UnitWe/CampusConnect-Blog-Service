@@ -38,7 +38,7 @@ export class BlogService {
       .find()
       .skip(skip)
       .limit(limit)
-      .select('title author')
+      .select('title author createdAt')
       .sort('-createdAt')
       .exec();
 
