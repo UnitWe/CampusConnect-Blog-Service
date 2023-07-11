@@ -1,27 +1,42 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from '../dto/create-post.dto';
 import { getOneDto } from '../dto/get-one-post.dto';
 import { Post } from '../interfaces/post.interface';
 import { Model } from 'mongoose';
+import { validObjectId } from 'src/utils/common';
 
 @Injectable()
 export class PostService {
-  constructor(@Inject('POST_MODEL') private postModel: Model<Post>) {}
+
+  logger: Logger
+
+  constructor(@Inject('POST_MODEL') private postModel: Model<Post>) {
+    this.logger = new Logger()
+  }
 
   async post(createPostDto: CreatePostDto): Promise<Post> {
-    const createdPost = new this.postModel(createPostDto);
-    return createdPost.save();
+    try {
+      const createdPost = new this.postModel(createPostDto);
+      return createdPost.save();
+    } catch (error) {
+      this.logger.error(error)
+      throw new InternalServerErrorException(`Um erro ocorreu ao tentar registrar: ${error.message}`)
+    }
   }
 
   async updateLikes(postId: string) {
-    try {
-      const postData = await this.postModel.findById(postId);
+    validObjectId(postId);
+    const postData = await this.postModel.findById(postId);
 
+    if(!postData){
+      throw new NotFoundException('Não foi possivel encontrar um post com esse id')
+    }
+
+    try {
       await postData.updateOne({ $inc: { likes: 1 } });
     } catch (error) {
-      throw new NotFoundException(
-        'Não foi possivel encontrar um post com esse id',
-      );
+      this.logger.error(error)
+      throw new InternalServerErrorException(`Um erro ocorreu ao tentar atualizar: ${error.message}`);
     }
   }
 
@@ -35,6 +50,10 @@ export class PostService {
       .select('title author likes createdAt')
       .sort('-createdAt')
       .exec();
+    
+    if(!(posts.length > 0)){
+      throw new NotFoundException('Não foi possivel encontrar nenhum post')
+    }
 
     let data = {
       data: posts,
@@ -48,14 +67,26 @@ export class PostService {
       .find({ author: author })
       .select('-content -comments')
       .exec();
+
+    if(!(post.length > 0)){
+      throw new NotFoundException('Não foi possivel encontrar nenhum post')
+    }
+    
     const data = {
       data: post,
     };
     return data;
   }
 
-  async getOnePostAuthor(author: String, id: String): Promise<{}> {
+  async getOnePostAuthor(authorName: String, id: string): Promise<{}> {
+    validObjectId(id);
+
     const post = await this.postModel.findById(id).populate('comments').exec();
+    
+    if(!post){
+      throw new NotFoundException('Não foi possivel encontrar um post com esse id')
+    }
+
     let data = {
       data: post,
     };

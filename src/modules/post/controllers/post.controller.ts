@@ -18,7 +18,7 @@ export class PostController {
     }
 
     @Get(':authorName/:id')
-    getOnePostPerAuthor(@Param('authorName') authorName: String, @Param('id') id:String) {
+    getOnePostPerAuthor(@Param('authorName') authorName: string, @Param('id') id:string) {
         return this.postService.getOnePostAuthor(authorName, id)
     }
 

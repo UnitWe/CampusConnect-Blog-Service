@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, InternalServerErrorException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { CreateCommentDto } from '../dto/create-comment.dto';
 import { Post } from '../../../modules/post/interfaces/post.interface';
@@ -11,7 +11,13 @@ export class CommentService {
   ) {}
 
   async postComment(comment: CreateCommentDto): Promise<Comment> {
-    const createdComment = new this.commentModel(comment);
+    let createdComment: any
+
+    try {
+       createdComment = new this.commentModel(comment);
+    } catch (error) {
+      throw new InternalServerErrorException(`Um erro ocorreu ao tentar registrar: ${error.message}`)
+    }
 
     let post = await this.postModel.findById(comment.post_id);
     let newComments = post['comments'];
