@@ -12,6 +12,11 @@ export class PostController {
         return this.postService.post(createPostDto)
     }
 
+    @Get()
+    getAllPosts(@Body() getOneDto: getOneDto) {
+        return this.postService.getAllPosts(getOneDto)
+    }
+
     @Get(':authorName')
     getAllPostPerAuthor(@Param('authorName') authorName:String) {
         return this.postService.getAllPostPerAuthor(authorName)
@@ -22,10 +27,6 @@ export class PostController {
         return this.postService.getOnePostAuthor(authorName, id)
     }
 
-    @Post()
-    getAllPosts(@Body() getOneDto: getOneDto) {
-        return this.postService.getAllPosts(getOneDto)
-    }
 
     @Patch(":postId/like")
     updateLikeInAPost(@Param('postId') postId: string){

@@ -1,4 +1,4 @@
 export class getOneDto {
     limit: number
-    currentPage: number
+    current_page: number
 }

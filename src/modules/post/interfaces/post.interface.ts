@@ -1,10 +1,13 @@
 import { Types } from 'mongoose';
 export interface Post {
     title: string
-    authorId: Types.ObjectId
-    content: string
-    tags?: string[]
-    likes: number
+    author: string;
+    content: string;
+    reading_time: number;
+    tags?: string[];
+    likes: number;
+    comments: Types.ObjectId[];
     published: boolean;
     createdAt: Date;
+    updatedAt: Date;
 }
