@@ -12,7 +12,7 @@ export class PostController {
         return this.postService.post(createPostDto)
     }
 
-    @Get()
+    @Post()
     getAllPosts(@Body() getOneDto: getOneDto) {
         return this.postService.getAllPosts(getOneDto)
     }
