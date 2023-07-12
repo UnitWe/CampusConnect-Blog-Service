@@ -64,7 +64,8 @@ export class PostService {
           author: 1,
           likes: 1,
           createdAt: 1,
-          commentsCount: 1
+          commentsCount: 1,
+          tags: 1,
         }
       }
     ]).exec();
