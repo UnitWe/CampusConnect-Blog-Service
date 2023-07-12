@@ -130,7 +130,7 @@ export class PostService {
       throw new NotFoundException('Não foi possivel encontrar um post com esse id')
     }
 
-    const { _id, title, author, content, tags, reading_time, comments, createdAt, updatedAt, published } = post
+    const { _id, title, author, content, tags, likes, reading_time, comments, createdAt, updatedAt, published } = post
     
     const commentsCount = comments.length
     
@@ -140,7 +140,8 @@ export class PostService {
         title,
         author, 
         content, 
-        tags, 
+        tags,
+        likes,
         reading_time, 
         comments, 
         createdAt, 
