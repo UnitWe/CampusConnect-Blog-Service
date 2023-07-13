@@ -106,6 +106,8 @@ export class PostService {
           likes: 1,
           createdAt: 1,
           comments: 1,
+          tags: 1,
+          reading_time: 1,
           commentsCount: 1
         }
       }
