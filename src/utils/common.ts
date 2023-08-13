@@ -1,8 +1,8 @@
 import { BadRequestException } from "@nestjs/common";
-import { isObjectIdOrHexString } from "mongoose";
+import { ObjectId } from "mongodb"
 
 export function validObjectId(value: string){
-    if(!isObjectIdOrHexString(value)){
+    if(!ObjectId.isValid(value)){
         throw new BadRequestException("O valor do id inserido é inválido!")
     }
 }

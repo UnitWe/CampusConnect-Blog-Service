@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  active          Boolean   @default(true)
+  username        String    @unique
+  email           String    @unique
+  profile_url     String?
+  user_service_id String    @unique
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now()) @updatedAt
+  posts           Post[]
+  comments        Comment[]
+  rooms            Room[]
+}
+
+model Post {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  active       Boolean   @default(true)
+  title        String
+  author_id    String    @db.ObjectId
+  author       User      @relation(fields: [author_id], references: [id])
+  content      String
+  reading_time Int
+  likes        Int       @default(0)
+  tags         String[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+  comments     Comment[]
+}
+
+
+model Comment {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  active    Boolean @default(true)
+  content   String
+  author_id String  @db.ObjectId
+  author    User    @relation(fields: [author_id], references: [id])
+  post_id   String  @db.ObjectId
+  post      Post    @relation(fields: [post_id], references: [id])
+}
+
+model Room {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  active      Boolean  @default(true)
+  title       String
+  access_link String
+  owner_id    String   @db.ObjectId
+  owner       User     @relation(fields: [owner_id], references: [id])
+  duration    Int
+  tags        String[]
+  start_at    DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+}

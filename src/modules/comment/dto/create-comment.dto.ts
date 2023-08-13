@@ -1,6 +1,7 @@
-import { Types } from 'mongoose';
+import { ObjectId } from "mongodb"
+
 export class CreateCommentDto {
     username: string
     content: string
-    post_id: Types.ObjectId
+    post_id: ObjectId
 }

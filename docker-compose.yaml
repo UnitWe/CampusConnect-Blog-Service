@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+
+  app:
+    build: .
+    entrypoint: ./.docker/entrypoint.sh
+    container_name: campusconnect-blog-service
+    volumes:
+      - .:/app
+    env_file:
+      - ./.env
+    ports:
+      - "5001:5001"
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
+      - "localhost:172.17.0.1"

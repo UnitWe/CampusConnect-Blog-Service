@@ -1,79 +1,67 @@
-import { Inject, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from '../dto/create-post.dto';
 import { getOneDto } from '../dto/get-one-post.dto';
-import { Post } from '../interfaces/post.interface';
-import { Model } from 'mongoose';
+import { PrismaService } from '../../../modules/prisma/services/prisma.service';
+import { Post } from '@prisma/client';
 import { validObjectId } from '../../../utils/common';
 
 @Injectable()
 export class PostService {
-
-  logger: Logger
-
-  constructor(@Inject('POST_MODEL') private postModel: Model<Post>) {
-    this.logger = new Logger()
-  }
+  constructor(private readonly prismaService: PrismaService) {}
 
   async post(createPostDto: CreatePostDto): Promise<Post> {
-    try {
-      const createdPost = new this.postModel(createPostDto);
-      return createdPost.save();
-    } catch (error) {
-      this.logger.error(error)
-      throw new InternalServerErrorException(`Um erro ocorreu ao tentar registrar: ${error.message}`)
-    }
+    const createdPost = await this.prismaService.post.create({
+      data: createPostDto,
+    });
+
+    return createdPost;
   }
 
   async updateLikes(postId: string) {
     validObjectId(postId);
-    const postData = await this.postModel.findById(postId);
+    const postData = await this.prismaService.post.findUnique({
+      where: { id: postId },
+    });
 
-    if(!postData){
-      throw new NotFoundException('Não foi possivel encontrar um post com esse id')
-    }
+    if (!postData)
+      throw new NotFoundException(
+        'Não foi possível encontrar uma publicação com esse Id',
+      );
 
-    try {
-      await postData.updateOne({ $inc: { likes: 1 } });
-    } catch (error) {
-      this.logger.error(error)
-      throw new InternalServerErrorException(`Um erro ocorreu ao tentar atualizar: ${error.message}`);
-    }
+    await this.prismaService.post.update({
+      where: { id: postId },
+      data: { likes: postData.likes + 1 },
+    });
+    return;
   }
 
   async getAllPosts(getOneDto: getOneDto) {
     const { current_page, limit } = getOneDto;
     const skip = (current_page - 1) * limit;
-    const posts = await this.postModel.aggregate([
-      {
-        $sort: { createdAt: -1 }
-      },
-      {
-        $skip: skip
-      },
-      {
-        $limit: limit
-      },
-      {
-        $addFields: {
-          commentsCount: { $size: "$comments" }
-        }
-      },
-      {
-        $project: {
-          title: 1,
-          author: 1,
-          likes: 1,
-          createdAt: 1,
-          commentsCount: 1,
-          tags: 1,
-        }
-      }
-    ]).exec();
-    
-    const countPosts = await this.postModel.count().exec();
 
-    if(!(posts.length > 0)){
-      throw new NotFoundException('Não foi possivel encontrar nenhum post')
+    const posts = await this.prismaService.post.findMany({
+      skip: skip,
+      take: limit,
+      where: {
+        active: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
+        comments: true,
+      },
+    });
+
+    const countPosts = await this.prismaService.post.count();
+
+    if (!(posts.length > 0)) {
+      throw new NotFoundException('Não foi possivel encontrar nenhum post');
     }
 
     let data = {
@@ -87,72 +75,46 @@ export class PostService {
     return data;
   }
 
-  async getAllPostPerAuthor(author: String): Promise<{}> {
-    const post = await this.postModel.aggregate([
-      {
-        $match:{
-          author: author
-        }
+  async getAllPostPerAuthor(author_id: string) {
+    const post = await this.prismaService.post.findMany({
+      where: { author_id },
+      orderBy: {
+        createdAt: 'desc',
       },
-      {
-        $addFields: {
-          commentsCount: { $size: "$comments" }
-        }
+      include: {
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
       },
-      {
-        $project: {
-          title: 1,
-          author: 1,
-          likes: 1,
-          createdAt: 1,
-          comments: 1,
-          tags: 1,
-          reading_time: 1,
-          commentsCount: 1
-        }
-      }
-    ]).exec();
+    });
 
-    if(!(post.length > 0)){
-      throw new NotFoundException('Não foi possivel encontrar nenhum post')
+    if (!(post.length > 0)) {
+      throw new NotFoundException('Não foi possivel encontrar nenhum post');
     }
-    
+
     const data = {
       data: post,
     };
+
     return data;
   }
 
-  async getOnePostAuthor(authorName: String, id: string): Promise<{}> {
+  async getOnePost(id: string) {
     validObjectId(id);
-
-    const post = await this.postModel.findById(id).populate('comments').exec();
     
-    if(!post){
-      throw new NotFoundException('Não foi possivel encontrar um post com esse id')
-    }
+    const post = await this.prismaService.post.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
+      },
+    });
 
-    const { _id, title, author, content, tags, likes, reading_time, comments, createdAt, updatedAt, published } = post
-    
-    const commentsCount = comments.length
-    
-    let data = {
-      data: {
-        _id,
-        title,
-        author, 
-        content, 
-        tags,
-        likes,
-        reading_time, 
-        comments, 
-        createdAt, 
-        updatedAt, 
-        published,
-        commentsCount: commentsCount
-      }
-    };
-
-    return data;
+    return post;
   }
 }

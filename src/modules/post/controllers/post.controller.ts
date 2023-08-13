@@ -1,35 +1,35 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Patch, Post } from '@nestjs/common';
 import { PostService } from '../services/post.service';
 import { CreatePostDto } from '../dto/create-post.dto';
 import { getOneDto } from '../dto/get-one-post.dto';
 
 @Controller('post')
 export class PostController {
-    constructor(private readonly postService: PostService) {}
+  constructor(private readonly postService: PostService) {}
 
-    @Post('create')
-    post(@Body() createPostDto: CreatePostDto) {
-        return this.postService.post(createPostDto)
-    }
+  @Post('create')
+  post(@Body() createPostDto: CreatePostDto) {
+    return this.postService.post(createPostDto);
+  }
 
-    @Post()
-    getAllPosts(@Body() getOneDto: getOneDto) {
-        return this.postService.getAllPosts(getOneDto)
-    }
+  @HttpCode(200)
+  @Post()
+  getAllPosts(@Body() getOneDto: getOneDto) {
+    return this.postService.getAllPosts(getOneDto);
+  }
 
-    @Get(':authorName')
-    getAllPostPerAuthor(@Param('authorName') authorName:String) {
-        return this.postService.getAllPostPerAuthor(authorName)
-    }
+  @Get('author/:id')
+  getAllPostPerAuthor(@Param('id') id: string) {
+    return this.postService.getAllPostPerAuthor(id);
+  }
 
-    @Get(':authorName/:id')
-    getOnePostPerAuthor(@Param('authorName') authorName: string, @Param('id') id:string) {
-        return this.postService.getOnePostAuthor(authorName, id)
-    }
+  @Get(':id')
+  getOnePost(@Param('id') id: string) {
+    return this.postService.getOnePost(id);
+  }
 
-
-    @Patch(":postId/like")
-    updateLikeInAPost(@Param('postId') postId: string){
-        return this.postService.updateLikes(postId)
-    }
+  @Patch(':id/like')
+  updateLikeInAPost(@Param('id') id: string) {
+    return this.postService.updateLikes(id);
+  }
 }
