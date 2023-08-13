@@ -12,13 +12,13 @@ model User {
   active          Boolean   @default(true)
   username        String    @unique
   email           String    @unique
-  profile_url     String?
+  profile_pic_url String?
   user_service_id String    @unique
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @default(now()) @updatedAt
   posts           Post[]
   comments        Comment[]
-  rooms            Room[]
+  rooms           Room[]
 }
 
 model Post {
@@ -36,7 +36,6 @@ model Post {
   comments     Comment[]
 }
 
-
 model Comment {
   id        String  @id @default(auto()) @map("_id") @db.ObjectId
   active    Boolean @default(true)
@@ -48,15 +47,15 @@ model Comment {
 }
 
 model Room {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  active      Boolean  @default(true)
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  active      Boolean   @default(true)
   title       String
   access_link String
-  owner_id    String   @db.ObjectId
-  owner       User     @relation(fields: [owner_id], references: [id])
+  owner_id    String    @db.ObjectId
+  owner       User      @relation(fields: [owner_id], references: [id])
   duration    Int
   tags        String[]
   start_at    DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
 }

@@ -5,7 +5,6 @@ import { CreateCommentDto } from '../dto/create-comment.dto';
 
 @Controller('comment')
 export class CommentController {
-
     constructor(private readonly commentService: CommentService){}
 
     @Post()

@@ -1,7 +1,17 @@
-import { Body, Controller, Get, HttpCode, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { PostService } from '../services/post.service';
 import { CreatePostDto } from '../dto/create-post.dto';
-import { getOneDto } from '../dto/get-one-post.dto';
+import { GetAllPostsQueryDto } from '../dto/get-all-posts-query.dto';
 
 @Controller('post')
 export class PostController {
@@ -12,10 +22,12 @@ export class PostController {
     return this.postService.post(createPostDto);
   }
 
-  @HttpCode(200)
-  @Post()
-  getAllPosts(@Body() getOneDto: getOneDto) {
-    return this.postService.getAllPosts(getOneDto);
+  @Get()
+  getAllPosts(
+    @Query('limit', new ParseIntPipe()) limit: number,
+    @Query('current', new ParseIntPipe()) current: number,
+  ) {
+    return this.postService.getAllPosts({ current, limit });
   }
 
   @Get('author/:id')

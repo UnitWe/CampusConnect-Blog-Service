@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from '../dto/create-post.dto';
-import { getOneDto } from '../dto/get-one-post.dto';
+import { GetAllPostsQueryDto } from '../dto/get-all-posts-query.dto';
 import { PrismaService } from '../../../modules/prisma/services/prisma.service';
 import { Post } from '@prisma/client';
 import { validObjectId } from '../../../utils/common';
@@ -35,9 +35,9 @@ export class PostService {
     return;
   }
 
-  async getAllPosts(getOneDto: getOneDto) {
-    const { current_page, limit } = getOneDto;
-    const skip = (current_page - 1) * limit;
+  async getAllPosts(getOneDto: GetAllPostsQueryDto) {
+    const { current, limit } = getOneDto;
+    const skip = (current - 1) * limit;
 
     const posts = await this.prismaService.post.findMany({
       skip: skip,
@@ -51,10 +51,21 @@ export class PostService {
       include: {
         _count: {
           select: {
-            comments: true,
+            comments: {
+              where: {
+                active: true
+              }
+            },
           },
         },
-        comments: true,
+        author: {
+          select: {
+            id: true,
+            username: true,
+            profile_pic_url: true,
+            email: true,
+          }
+        },
       },
     });
 
@@ -67,7 +78,7 @@ export class PostService {
     let data = {
       totalItems: countPosts,
       totalPages: Math.ceil(countPosts / limit),
-      current: current_page,
+      current: current,
       limit: limit,
       data: posts,
     };
@@ -84,8 +95,20 @@ export class PostService {
       include: {
         _count: {
           select: {
-            comments: true,
+            comments: {
+              where: {
+                active: true
+              }
+            },
           },
+        },
+        author: {
+          select: {
+            id: true,
+            username: true,
+            profile_pic_url: true,
+            email: true,
+          }
         },
       },
     });
@@ -109,8 +132,35 @@ export class PostService {
       include: {
         _count: {
           select: {
-            comments: true,
+            comments: {
+              where: {
+                active: true
+              }
+            },
           },
+        },
+        comments: {
+          select: {
+            content: true,
+            author: {
+              select: {
+                id: true,
+                username: true,
+                profile_pic_url: true,
+              }
+            }
+          },
+          where: {
+            active: true
+          },
+        },
+        author: {
+          select: {
+            id: true,
+            username: true,
+            profile_pic_url: true,
+            email: true,
+          }
         },
       },
     });
